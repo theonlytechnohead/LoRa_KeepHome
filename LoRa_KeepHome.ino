@@ -53,6 +53,7 @@ void setup () {
   
   const char *text = "Hello there";
   t.every(5000, testSendLoRa, (void*) text);
+  t.after(60*1000, drawUICallback, (void*) NULL); // refresh UI every minute
 }
 
 void loop () {

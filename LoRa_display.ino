@@ -25,6 +25,8 @@ enum UIs {
 enum UIs current_ui = UI_DEFAULT;
 uint8_t ui_height = 14;
 uint8_t timer_id;
+DynamicJsonDocument lastDoc(2048);
+
 
 void initOLED () {
   //reset OLED display via software
@@ -78,7 +80,7 @@ void drawUI () {
       display.drawString(0, 10, getLocalIP());
       break;
     case UI_NOTHING:
-      ui_height = 0;
+      ui_height = 1;
       display.setColor(BLACK);
       display.fillRect(0, 0, OLED_WIDTH, OLED_HEIGHT);
       display.setColor(WHITE);
@@ -118,6 +120,7 @@ void drawPacket (DynamicJsonDocument doc) {
     display.drawString(0, y, output);
     y += 10;
   }
+  lastDoc = doc;
   display.display();
 }
 
@@ -150,11 +153,18 @@ void cycleUI () {
   }
   drawUI();
   display.drawRect(0, 0, OLED_WIDTH, ui_height);
-  display.display();
+  drawPacket(lastDoc);
   timer_id = t.after(500, drawUICallback, (void*) NULL);
 }
 
 void drawUICallback (void* context) {
-  drawUI();
+  if (getCurrentUI() != UI_NOTHING) {
+    drawUI();
+  } else {
+    // Handle the special case of UI_NOTHING
+    display.setColor(BLACK);
+    display.fillRect(0, 0, OLED_WIDTH, 1);
+    display.setColor(WHITE);
+  }
   display.display();
 }
