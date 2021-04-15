@@ -26,7 +26,7 @@ void setup () {
 
   initModule(initOLED, "Display");
   initModule(initLoRa, "LoRa");
-  initModule(initSPIFFS, "SPIFSS");
+  initModule(initSPIFFS, "SPIFFS");
   initModule(initNetwork, "Network");
 
   

@@ -1,8 +1,8 @@
 WiFiUDP udp;
 unsigned int localPort = 8888;  // local port to listen for UDP packets
 static const char ntpServerName[] = "nz.pool.ntp.org";
-//const int timeZone = 12; // UTC+12 (NZST)
-const int timeZone = 13; // UTC+13 (NZDT)
+const int timeZone = 12; // UTC+12 (NZST)
+//const int timeZone = 13; // UTC+13 (NZDT)
 
 
 const int NTP_PACKET_SIZE = 48; // NTP time is in the first 48 bytes of message
