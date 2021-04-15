@@ -1,4 +1,4 @@
-WiFiUDP udp;
+WiFiUDP ntp_udp;
 unsigned int localPort = 8888;  // local port to listen for UDP packets
 static const char ntpServerName[] = "nz.pool.ntp.org";
 const int timeZone = 12; // UTC+12 (NZST)
@@ -10,7 +10,7 @@ byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming & outgoing packets
 
 
 void initNTP () {
-  udp.begin(localPort);
+  ntp_udp.begin(localPort);
   setSyncProvider(getNtpTime);
   setSyncInterval(300); // Seconds between re-sync
   //incrementReboots();
@@ -20,17 +20,17 @@ void initNTP () {
 time_t getNtpTime () {
   IPAddress ntpServerIP; // NTP server's ip address
 
-  while (udp.parsePacket() > 0) ; // discard any previously received packets
+  while (ntp_udp.parsePacket() > 0) ; // discard any previously received packets
   // get a random server from the pool
   ntpServerIP = getIP(String(ntpServerName));
   printMessage("ntp", "Transmit NTP request to " + String(ntpServerName) + " (" + ntpServerIP.toString() + ")");
   sendNTPpacket(ntpServerIP);
   uint32_t beginWait = millis();
   while (millis() - beginWait < 1500) {
-    int size = udp.parsePacket();
+    int size = ntp_udp.parsePacket();
     if (size >= NTP_PACKET_SIZE) {
       printMessage("ntp", "Received NTP response (time sync'd)");
-      udp.read(packetBuffer, NTP_PACKET_SIZE);  // read packet into the buffer
+      ntp_udp.read(packetBuffer, NTP_PACKET_SIZE);  // read packet into the buffer
       unsigned long secsSince1900;
       // convert four bytes starting at location 40 to a long integer
       secsSince1900 =  (unsigned long)packetBuffer[40] << 24;
@@ -61,9 +61,9 @@ void sendNTPpacket (IPAddress &address) {
   packetBuffer[15] = 52;
   // all NTP fields have been given values, now
   // you can send a packet requesting a timestamp:
-  udp.beginPacket(address, 123); //NTP requests are to port 123
-  udp.write(packetBuffer, NTP_PACKET_SIZE);
-  udp.endPacket();
+  ntp_udp.beginPacket(address, 123); //NTP requests are to port 123
+  ntp_udp.write(packetBuffer, NTP_PACKET_SIZE);
+  ntp_udp.endPacket();
 }
 
 // Utility functions

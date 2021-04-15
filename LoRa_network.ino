@@ -4,8 +4,10 @@
 #include <DNSServer.h>
 #include "TimeLib.h"
 
-DNSServer dnsServer;
 WebServer server(80);
+DNSServer dnsServer;
+WiFiUDP broadcast_udp;
+char udpBuffer[255]; // buffer to hold incoming UDP packet
 IPAddress ip;
 
 void initNetwork () {
@@ -60,6 +62,8 @@ void initMDNS () {
     printMessage("wifi", "MDNS responder started: KeepHome.local");
   }
   MDNS.addService("_http", "_tcp", 80);
+  broadcast_udp.begin(8874);
+   printMessage("wifi", "UDP responder started");
   initModule(initNTP, "NTP");
   
   drawUI();
@@ -122,6 +126,27 @@ String getLocalIP () {
 
 void handleWebClient () {
   server.handleClient();
+  int packetSize = broadcast_udp.parsePacket();
+  if (packetSize) {
+    Serial.print("Received packet of size ");
+    Serial.print(packetSize);
+    Serial.print(", from ");
+    IPAddress remoteIp = broadcast_udp.remoteIP();
+    Serial.print(remoteIp);
+    Serial.print(":");
+    Serial.println(broadcast_udp.remotePort());
+    // read the packet into packetBufffer
+    int len = broadcast_udp.read(udpBuffer, 255);
+    if (len > 0) {
+      udpBuffer[len] = 0;
+    }
+    Serial.print("Contents: ");
+    Serial.println(udpBuffer);
+    // send a reply, to the IP address and port that sent us the packet we received
+    broadcast_udp.beginPacket(broadcast_udp.remoteIP(), broadcast_udp.remotePort());
+    broadcast_udp.write((uint8_t)'A');
+    broadcast_udp.endPacket();
+  }
 }
 
 void disconnectWiFi () {
