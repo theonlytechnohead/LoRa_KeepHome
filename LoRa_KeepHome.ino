@@ -15,6 +15,7 @@ enum LORA_COMMANDS {
 // Local-ish variables
 Timer t;
 bool button_pressed = false;
+bool booted = false;
 unsigned long start_millis = 0;
 
 void setup () {
@@ -28,7 +29,6 @@ void setup () {
   initModule(initLoRa, "LoRa");
   initModule(initSPIFFS, "SPIFFS");
   initModule(initNetwork, "Network");
-
   
   xTaskCreatePinnedToCore(
       backgroundLoop, // Function to implement the task
@@ -39,10 +39,17 @@ void setup () {
       &background_loop,  // Task handle
       0); // Core where the task should run, code runs on core 1 by default
   
+  while (!booted) {
+    vTaskDelay(100);
+  }
 
-  printMessage("system", "Boot completed");
-  drawMessage("Boot done");
-  vTaskDelay(100);
+  printMessage("system", "Finished booting");
+  drawMessage("Boot complete");
+
+  vTaskDelay(500);
+
+  drawUI();
+  getDisplay() -> display();
   
   const char *text = "Hello there";
   t.every(5000, testSendLoRa, (void*) text);

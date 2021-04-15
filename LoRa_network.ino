@@ -63,11 +63,11 @@ void initMDNS () {
   }
   MDNS.addService("_http", "_tcp", 80);
   broadcast_udp.begin(8874);
-   printMessage("wifi", "UDP responder started");
+  printMessage("wifi", "UDP responder started");
   initModule(initNTP, "NTP");
   
-  drawUI();
-  getDisplay() -> display();
+  //drawUI();
+  //getDisplay() -> display();
   
   initWebserver();
 }
@@ -78,6 +78,7 @@ void initWebserver () {
 
   server.begin();
   printMessage("web", "Webserver initialized");
+  booted = true;
 }
 
 // Do POST (KeepHome APP)
