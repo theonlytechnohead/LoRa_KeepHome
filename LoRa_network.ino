@@ -128,23 +128,21 @@ void handleWebClient () {
   server.handleClient();
   int packetSize = broadcast_udp.parsePacket();
   if (packetSize) {
-    Serial.print("Received packet of size ");
-    Serial.print(packetSize);
-    Serial.print(", from ");
-    IPAddress remoteIp = broadcast_udp.remoteIP();
-    Serial.print(remoteIp);
-    Serial.print(":");
-    Serial.println(broadcast_udp.remotePort());
+    String logMessage = "Received packet of size " + String(packetSize) + ", from " + broadcast_udp.remoteIP().toString() + ":" + String(broadcast_udp.remotePort());
+    printMessage("web", logMessage);
     // read the packet into packetBufffer
-    int len = broadcast_udp.read(udpBuffer, 255);
-    if (len > 0) {
-      udpBuffer[len] = 0;
+    int bytes_read = broadcast_udp.read(udpBuffer, 255);
+    if (bytes_read > 0) {
+      udpBuffer[bytes_read] = 0; // set null terminator
     }
-    Serial.print("Contents: ");
-    Serial.println(udpBuffer);
+    printMessage("web", "Received: " + String(udpBuffer));
     // send a reply, to the IP address and port that sent us the packet we received
     broadcast_udp.beginPacket(broadcast_udp.remoteIP(), broadcast_udp.remotePort());
-    broadcast_udp.write((uint8_t)'A');
+    char reply[] = "ACK";
+    int i = 0;
+    while (i < sizeof(reply) - 1) { // don't send null terminator
+      broadcast_udp.write((uint8_t)reply[i++]);
+    }
     broadcast_udp.endPacket();
   }
 }
