@@ -67,6 +67,7 @@ void drawUI () {
       display.fillRect(0, 0, OLED_WIDTH, ui_height);
       display.setColor(WHITE);
       display.drawString(0, 0, "Detailed UI");
+      display.drawString(0, 10, getLocalIP());
       break;
     case UI_EVERYTHING:
       ui_height = OLED_HEIGHT;
@@ -74,6 +75,7 @@ void drawUI () {
       display.fillRect(0, 0, OLED_WIDTH, ui_height);
       display.setColor(WHITE);
       display.drawString(0, 0, "EVERYTHING");
+      display.drawString(0, 10, getLocalIP());
       break;
     case UI_NOTHING:
       ui_height = 0;

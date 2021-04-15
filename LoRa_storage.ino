@@ -20,6 +20,11 @@ void listFiles () {
   File file = root.openNextFile();
   while(file){
     if (String(file.name()) == "/log.txt") { file = root.openNextFile(); continue; }
+    if (String(file.name()) == "/password.txt") {
+      printMessage("file", String(file.name()) + ": <REDACTED>");
+      file = root.openNextFile();
+      continue;
+    }
     printMessage("file", String(file.name()) + ": '" + readFile(file.name()) + "'");
     file = root.openNextFile();
   }

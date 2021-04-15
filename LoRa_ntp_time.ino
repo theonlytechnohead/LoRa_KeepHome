@@ -23,13 +23,13 @@ time_t getNtpTime () {
   while (udp.parsePacket() > 0) ; // discard any previously received packets
   // get a random server from the pool
   ntpServerIP = getIP(String(ntpServerName));
-  printMessage("NTP", "Transmit NTP request to " + String(ntpServerName) + " (" + ntpServerIP.toString() + ")");
+  printMessage("ntp", "Transmit NTP request to " + String(ntpServerName) + " (" + ntpServerIP.toString() + ")");
   sendNTPpacket(ntpServerIP);
   uint32_t beginWait = millis();
   while (millis() - beginWait < 1500) {
     int size = udp.parsePacket();
     if (size >= NTP_PACKET_SIZE) {
-      printMessage("NTP", "Received NTP response (time sync'd)");
+      printMessage("ntp", "Received NTP response (time sync'd)");
       udp.read(packetBuffer, NTP_PACKET_SIZE);  // read packet into the buffer
       unsigned long secsSince1900;
       // convert four bytes starting at location 40 to a long integer
@@ -40,7 +40,7 @@ time_t getNtpTime () {
       return secsSince1900 - 2208988800UL + timeZone * SECS_PER_HOUR;
     }
   }
-  printMessage("NTP", "No NTP response");
+  printMessage("ntp", "No NTP response");
   return 0; // return 0 if unable to get the time
 }
 

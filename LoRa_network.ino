@@ -5,26 +5,27 @@
 #include "TimeLib.h"
 
 DNSServer dnsServer;
+WebServer server(80);
 IPAddress ip;
 
 void initNetwork () {
   if (checkFile("/ap_mode.txt")) {
     String ap_mode = readFile("/ap_mode.txt");
     if (ap_mode == "1") {
-      printMessage("WiFi", "Initializing AP mode");
+      printMessage("wifi", "Initializing AP mode");
       initAP();
     } else {
-      printMessage("WiFi", "Initializing client mode");
+      printMessage("wifi", "Initializing client mode");
       initWiFi();
     }
   } else {
     writeFile("/ap_mode.txt", "1");
-    printMessage("WiFi", "Initializing AP mode");
+    printMessage("wifi", "Initializing AP mode");
     initAP();
   }
 }
 
-// Cuz Arduino IDE is a dumb-dumb
+// Cuz Arduino IDE is a dum-dum (incorrect ordering in auto-header file)
 void onWiFiIP (WiFiEvent_t event, WiFiEventInfo_t info);
 
 // Connect to WiFi part 1
@@ -32,7 +33,7 @@ void initWiFi () {
   WiFi.onEvent(onWiFiIP, WiFiEvent_t::SYSTEM_EVENT_STA_GOT_IP);
   String ssid = getSSID();
   String password = getPassword();
-  printMessage("WiFi", "Connecting to " + ssid + "...");
+  printMessage("wifi", "Connecting to " + ssid + "...");
   WiFi.begin(ssid.c_str(), password.c_str());
 }
 
@@ -53,10 +54,10 @@ void initAP () {
 
 // Do WiFi
 void initMDNS () {
-  printMessage("WiFi", "Connected to " + WiFi.SSID());
-  printMessage("WiFi", "IP address: " + ip.toString());
+  printMessage("wifi", "Connected to " + WiFi.SSID());
+  printMessage("wifi", "IP address: " + ip.toString());
   if (MDNS.begin("KeepHome")) {
-    printMessage("WiFi", "MDNS responder started: KeepHome.local");
+    printMessage("wifi", "MDNS responder started: KeepHome.local");
   }
   MDNS.addService("_http", "_tcp", 80);
   initModule(initNTP, "NTP");
@@ -69,9 +70,16 @@ void initMDNS () {
 
 // Do Webserver
 void initWebserver () {
-  
+  server.on("/post", HTTP_POST, handlePOST); // Call the 'handlePost' function when a client sends a POST request to URI "/post"
+
+  server.begin();
+  printMessage("web", "Webserver initialized");
 }
 
+
+void handlePOST () {
+  printMessage("POST", "Got a POST request (from: " + server.client().remoteIP().toString() + ")");
+}
 
 // Utility functions
 String getSSID () {
@@ -102,9 +110,18 @@ IPAddress getIP (String server) {
   IPAddress result;
   int error = WiFi.hostByName(server.c_str(), result) ;
   if(error != 1) {
-    printMessage("WiFi", "getIP() error: " + String(error));
+    printMessage("wifi", "getIP() error: " + String(error));
   }
   return result;
+}
+
+// Returns a string with the local IP address
+String getLocalIP () {
+  return ip.toString();
+}
+
+void handleWebClient () {
+  server.handleClient();
 }
 
 void disconnectWiFi () {
