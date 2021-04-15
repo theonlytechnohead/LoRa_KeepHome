@@ -37,7 +37,7 @@ void initWiFi () {
   WiFi.begin(ssid.c_str(), password.c_str());
 }
 
-// Connect to WiFi part 2
+// Connect to WiFi part 2 (connected)
 void onWiFiIP (WiFiEvent_t event, WiFiEventInfo_t info) {
   ip = WiFi.localIP();
   initMDNS();
@@ -52,7 +52,7 @@ void initAP () {
   initMDNS();
 }
 
-// Do WiFi
+// WiFi done, do MDNS, update UI, etc...
 void initMDNS () {
   printMessage("wifi", "Connected to " + WiFi.SSID());
   printMessage("wifi", "IP address: " + ip.toString());
@@ -76,7 +76,7 @@ void initWebserver () {
   printMessage("web", "Webserver initialized");
 }
 
-
+// Do POST (KeepHome APP)
 void handlePOST () {
   printMessage("POST", "Got a POST request (from: " + server.client().remoteIP().toString() + ")");
 }
