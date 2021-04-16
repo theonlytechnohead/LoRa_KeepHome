@@ -133,6 +133,10 @@ int getCurrentUI () {
   return current_ui;
 }
 
+uint8_t getUIheight () {
+  return ui_height;
+}
+
 bool isShowingResetUI () {
   return current_ui == UI_RESET;
 }

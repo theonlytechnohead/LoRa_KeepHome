@@ -42,7 +42,7 @@ void setup () {
   while (!booted) {
     vTaskDelay(100);
   }
-
+  
   printMessage("system", "Finished booting");
   drawMessage("Boot complete");
 

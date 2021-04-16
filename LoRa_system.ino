@@ -16,10 +16,14 @@ void handleButton () {
     vTaskDelay(10);
   }
   if (!digitalRead(0) && button_pressed && start_millis != 0) {
-    if (millis() - 1000 >= start_millis) {
+    if (millis() - 2500 >= start_millis) {
       Serial.println("Long press!");
       formatSPIFFS();
       start_millis = 0;
+    } else {
+      int width = (millis() - start_millis) / 2500.0 * OLED_WIDTH;
+      getDisplay() -> drawRect(0, 0, width, getUIheight());
+      getDisplay() -> display();
     }
   }
   if (digitalRead(0) && button_pressed) {
