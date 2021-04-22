@@ -75,6 +75,7 @@ void initMDNS () {
 // Do Webserver
 void initWebserver () {
   server.on("/post", HTTP_POST, handlePOST); // Call the 'handlePost' function when a client sends a POST request to URI "/post"
+  server.on("/restart", restart);
 
   server.begin();
   printMessage("web", "Webserver initialized");

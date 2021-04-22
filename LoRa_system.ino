@@ -37,8 +37,8 @@ void handleButton () {
 
 String getFormattedMillis () {
   unsigned long current = millis();
-  unsigned int seconds = current / 1000;
-  unsigned int decimal = current % 1000;
+  unsigned long seconds = current / 1000;
+  unsigned short decimal = current % 1000;
   String seconds_s = String(seconds);
   while (seconds_s.length() < 5) { seconds_s = " " + seconds_s; }
   String decimal_f;
@@ -69,11 +69,5 @@ void printMessage (const char* tag, const char* message) {
 void restart () {
   endMDNS();
   disconnectWiFi();
-  getDisplay() -> clear();
-  getDisplay() -> drawString(0, 0, "Restarting now...");
-  getDisplay() -> display();
-  vTaskDelay(1500);
-  getDisplay() -> clear();
-  vTaskDelay(100);
   ESP.restart();
 }
