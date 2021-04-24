@@ -61,7 +61,7 @@ void drawUI () {
       display.setColor(WHITE);
       display.drawString(0, 0, "KeepHome");
       display.setTextAlignment(TEXT_ALIGN_RIGHT);
-      display.drawString(128, 0, String(LoRa.temperature()) + "°C");
+      //display.drawString(128, 0, String(LoRa.temperature()) + "°C");
       break;
     case UI_DETAILED:
       ui_height = 24;

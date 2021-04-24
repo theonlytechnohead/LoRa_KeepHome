@@ -39,7 +39,8 @@ void initLoRa () {
 }
 
 long setFrequencyCorrection () {
-  uint8_t temperature = LoRa.temperature();
+  // uint8_t temperature = LoRa.temperature();
+  uint8_t temperature = 0;
   String temp_s = String(temperature) + "°C";
   long frequencyOffset = 150 * temperature;
   LoRa.setFrequency(LORA_FREQ + frequencyOffset);
