@@ -1,0 +1,6 @@
+Hello world!
+<br>
+<br>
+<form action='/log'><input type='submit' value='View log'></form>
+<form action='/clear'><input type='submit' value='Clear log'></form>
+<form action='/restart'><input type='submit' value='Restart KeepHome'>

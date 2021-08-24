@@ -74,8 +74,9 @@ void drawUI () {
       display.setColor(BLACK);
       display.fillRect(0, 0, OLED_WIDTH, ui_height);
       display.setColor(WHITE);
-      display.drawString(0, 0, "EVERYTHING");
+      display.drawString(0, 0, "KeepHome.local/");
       display.drawString(0, 10, getLocalIP());
+      display.drawString(0, 20, "Wi-Fi: " + getNetworkName());
       break;
     case UI_NOTHING:
       ui_height = 1;

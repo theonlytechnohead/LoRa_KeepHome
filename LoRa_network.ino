@@ -10,19 +10,28 @@ WiFiUDP broadcast_udp;
 char udpBuffer[255]; // buffer to hold incoming UDP packet
 IPAddress ip;
 
+enum WiFiMode {
+  Client,
+  AP
+};
+enum WiFiMode currentMode;
+
 void initNetwork () {
   if (checkFile("/ap_mode.txt")) {
     String ap_mode = readFile("/ap_mode.txt");
     if (ap_mode == "1") {
       printMessage("wifi", "Initializing AP mode");
+      currentMode = AP;
       initAP();
     } else {
       printMessage("wifi", "Initializing client mode");
+      currentMode = Client;
       initWiFi();
     }
   } else {
     writeFile("/ap_mode.txt", "1");
     printMessage("wifi", "Initializing AP mode");
+    currentMode = AP;
     initAP();
   }
 }
@@ -74,6 +83,7 @@ void initMDNS () {
 
 // Do Webserver
 void initWebserver () {
+  server.on("/", handleRoot);
   server.on("/post", HTTP_POST, handlePOST); // Call the 'handlePost' function when a client sends a POST request to URI "/post"
   server.on("/restart", restart);
 
@@ -82,9 +92,15 @@ void initWebserver () {
   booted = true;
 }
 
+void handleRoot () {
+  printMessage("web", "Got web client from: " + server.client().remoteIP().toString());
+  String index = readFile("/web/index.txt");
+  server.send(200, "text/html", index); // Send HTTP status 200 (Ok) and send some HTML to the browser/client
+}
+
 // Do POST (KeepHome APP)
 void handlePOST () {
-  printMessage("POST", "Got a POST request (from: " + server.client().remoteIP().toString() + ")");
+  printMessage("POST", "Got a POST request from: " + server.client().remoteIP().toString());
 }
 
 // Utility functions
@@ -155,4 +171,13 @@ void disconnectWiFi () {
 
 void endMDNS () {
   MDNS.end();
+}
+
+// Info functions
+int getWiFiMode() {
+  return currentMode;
+}
+
+String getNetworkName() {
+  return WiFi.SSID();
 }
