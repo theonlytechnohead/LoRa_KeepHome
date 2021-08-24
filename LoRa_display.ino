@@ -51,7 +51,6 @@ void initOLED () {
 }
 
 void drawUI () {
-  //display.clear();
   display.setTextAlignment(TEXT_ALIGN_LEFT);
   switch (current_ui) {
     case UI_DEFAULT:
@@ -61,7 +60,6 @@ void drawUI () {
       display.setColor(WHITE);
       display.drawString(0, 0, "KeepHome");
       display.setTextAlignment(TEXT_ALIGN_RIGHT);
-      //display.drawString(128, 0, String(LoRa.temperature()) + "°C");
       break;
     case UI_DETAILED:
       ui_height = 24;

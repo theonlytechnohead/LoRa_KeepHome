@@ -72,7 +72,7 @@ void sendJSON (DynamicJsonDocument doc) {
       "LoRa send", // Name of the task
       8192,  // Stack size in words, causes stack overflow if too low
       output,  // Task input parameter
-      0,  // Priority of the task, 0 is lowest
+      1,  // Priority of the task, 0 is lowest
       &send_task,  // Task handle
       0); // Core where the task should run, code runs on core 1 by default
 

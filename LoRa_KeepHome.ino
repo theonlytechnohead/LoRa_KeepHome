@@ -3,6 +3,7 @@
 #include <OLEDDisplayUi.h>
 #include "soc/rtc_wdt.h" // FreeRTOS WDT control for ESP32
 #include <ArduinoJson.h>
+#include <Event.h>
 #include <Timer.h>
 
 // Global constants / variables
