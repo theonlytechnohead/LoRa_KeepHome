@@ -68,7 +68,7 @@ void initMDNS () {
   printMessage("wifi", "Connected to " + WiFi.SSID());
   printMessage("wifi", "IP address: " + ip.toString());
   if (MDNS.begin("KeepHome")) {
-    printMessage("wifi", "MDNS responder started: KeepHome.local");
+    printMessage("wifi", "mDNS responder started: KeepHome.local/");
   }
   MDNS.addService("_http", "_tcp", 80);
   broadcast_udp.begin(8874);
@@ -101,6 +101,38 @@ void handleRoot () {
 // Do POST (KeepHome APP)
 void handlePOST () {
   printMessage("POST", "Got a POST request from: " + server.client().remoteIP().toString());
+  DynamicJsonDocument doc(1024); // Space for 1kb of JSON data in the heap
+
+  doc["time"] = millis() / 1000;
+  doc["additional"] = "Additional text!";
+
+  for (int i = 0; i < server.args(); i++) {
+    printMessage("POST", "  " + server.argName(i) + ": " + server.arg(i));
+  }
+  // SSID
+  if (server.hasArg("SSID")) {
+    if (server.arg("SSID") == "get") {
+      doc["SSID"] = WiFi.SSID();
+    }
+  }
+
+  // WifiMode
+  if (server.hasArg("WiFiMode")) {
+    if (server.arg("WiFiMode") == "get") {
+      doc["WiFiMode"] = currentMode;
+    }
+  }
+
+  // Password
+  if (server.hasArg("password")) {
+    if (server.arg("password") == "get") {
+      doc["password"] = getPassword();
+    }
+  }
+
+  char output[measureJson(doc) + 1]; // output buffer, needs + 1 to fix off-by-one length error (for null-terminator)
+  serializeJson(doc, output, sizeof(output)); // change the document into proper json, and put it into the output
+  server.send(200, "text/json", output); // send the output to the client as json text
 }
 
 // Utility functions
@@ -114,6 +146,14 @@ String getSSID () {
   }
 }
 
+void setSSID (String newSSID) {
+  writeFile("/ssid.txt", newSSID);
+}
+
+void setWiFiMode (String newMode) {
+  writeFile("/ap_mode.txt", newMode);
+}
+
 String getPassword () {
   if (checkFile("/password.txt")) {
     String password = readFile("/password.txt");
@@ -125,6 +165,12 @@ String getPassword () {
     }
     writeFile("/password.txt", password);
     return password;
+  }
+}
+
+void setPassword (String newPassword) {
+  if (newPassword.length() >= 8) {
+    writeFile("/password.txt", newPassword);
   }
 }
 
