@@ -54,7 +54,7 @@ void setup () {
   const char *text = "Hello there";
 //  t.every(5000, testSendLoRa, (void*) text);
   t.every(5000, testQueuePacket, (void*) text);
-  t.after(60*1000, drawUICallback, (void*) NULL); // refresh UI every minute
+  t.after(60*1000, drawUICallback, (void*) NULL); // refresh UI after a minute
 }
 
 void loop () {
