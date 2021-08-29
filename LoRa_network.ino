@@ -19,6 +19,7 @@ enum WiFiMode currentMode;
 void initNetwork () {
   if (checkFile("/ap_mode.txt")) {
     String ap_mode = readFile("/ap_mode.txt");
+    ap_mode.trim();
     if (ap_mode == "1") {
       printMessage("wifi", "Initializing AP mode");
       currentMode = AP;
@@ -106,13 +107,16 @@ void handlePOST () {
   doc["time"] = millis() / 1000;
   doc["additional"] = "Additional text!";
 
-  for (int i = 0; i < server.args(); i++) {
-    printMessage("POST", "  " + server.argName(i) + ": " + server.arg(i));
-  }
+//  for (int i = 0; i < server.args(); i++) {
+//    printMessage("POST", "  " + server.argName(i) + ": " + server.arg(i));
+//  }
   // SSID
   if (server.hasArg("SSID")) {
     if (server.arg("SSID") == "get") {
       doc["SSID"] = WiFi.SSID();
+    } else if (server.arg("SSID") == "set") {
+      setSSID(server.arg("newWiFiSSID"));
+      printMessage("POST", "  set new WiFi SSID: " + server.arg("newWiFiSSID"));
     }
   }
 
@@ -120,6 +124,13 @@ void handlePOST () {
   if (server.hasArg("WiFiMode")) {
     if (server.arg("WiFiMode") == "get") {
       doc["WiFiMode"] = currentMode;
+    } else if (server.arg("WiFiMode") == "set") {
+      setWiFiMode(server.arg("newWiFimode"));
+      if (server.arg("newWiFimode") == "1") {
+        printMessage("POST", "  now acting as WiFi AP");
+      } else {
+        printMessage("POST", "  now acting as WiFi client");
+      }
     }
   }
 
@@ -127,6 +138,9 @@ void handlePOST () {
   if (server.hasArg("password")) {
     if (server.arg("password") == "get") {
       doc["password"] = getPassword();
+    } else if (server.arg("password") == "set") {
+      setPassword(server.arg("newPassword"));
+      printMessage("POST", "  set new WiFi password");
     }
   }
 
@@ -139,6 +153,7 @@ void handlePOST () {
 String getSSID () {
   if (checkFile("/ssid.txt")) {
     String ssid = readFile("/ssid.txt");
+    ssid.trim();
     return ssid;
   } else {
     writeFile("/ssid.txt", "KeepHome");
@@ -147,16 +162,19 @@ String getSSID () {
 }
 
 void setSSID (String newSSID) {
+  newSSID.trim();
   writeFile("/ssid.txt", newSSID);
 }
 
 void setWiFiMode (String newMode) {
+  newMode.trim();
   writeFile("/ap_mode.txt", newMode);
 }
 
 String getPassword () {
   if (checkFile("/password.txt")) {
     String password = readFile("/password.txt");
+    password.trim();
     return password;
   } else {
     String password;
@@ -170,6 +188,7 @@ String getPassword () {
 
 void setPassword (String newPassword) {
   if (newPassword.length() >= 8) {
+    newPassword.trim();
     writeFile("/password.txt", newPassword);
   }
 }
