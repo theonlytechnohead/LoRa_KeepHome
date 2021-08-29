@@ -14,3 +14,6 @@ https://github.com/JChristensen/Timer/tree/v2.1#examples
 
 ### Time/NTP (TimeLib.h)
 https://github.com/PaulStoffregen/Time
+
+### Circular Buffer (CircularBuffer.h)
+https://github.com/rlogiacco/CircularBuffer

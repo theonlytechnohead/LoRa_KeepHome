@@ -9,9 +9,7 @@
 // Global constants / variables
 TaskHandle_t background_loop;
 
-enum LORA_COMMANDS {
-  ONE, TWO, THREE
-};
+void (*state)(); // function pointer, to hold the current state (i.e. function to execute)
 
 // Local-ish variables
 Timer t;
@@ -51,15 +49,18 @@ void setup () {
 
   drawUI();
   getDisplay() -> display();
-  
+
+  state = idle;
   const char *text = "Hello there";
-  t.every(5000, testSendLoRa, (void*) text);
+//  t.every(5000, testSendLoRa, (void*) text);
+  t.every(5000, testQueuePacket, (void*) text);
   t.after(60*1000, drawUICallback, (void*) NULL); // refresh UI every minute
 }
 
 void loop () {
   handleButton();
   t.update();
+  state();
 }
 
 void backgroundLoop (void* parameter) {

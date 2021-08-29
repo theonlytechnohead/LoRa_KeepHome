@@ -38,6 +38,7 @@ void initLoRa () {
   LoRa.idle();
 }
 
+// unused/deprecated
 long setFrequencyCorrection () {
   // uint8_t temperature = LoRa.temperature();
   uint8_t temperature = 0;
@@ -48,6 +49,7 @@ long setFrequencyCorrection () {
   return frequencyOffset;
 }
 
+// deprecated
 void sendJSON (DynamicJsonDocument doc) {
   // Prepare for sending and turn on LED
   //setFrequencyCorrection();
@@ -67,24 +69,30 @@ void sendJSON (DynamicJsonDocument doc) {
   digitalWrite(2, LOW);
   
   // send packet
-  xTaskCreatePinnedToCore(
-      sendTask, // Function to implement the task
-      "LoRa send", // Name of the task
-      8192,  // Stack size in words, causes stack overflow if too low
-      output,  // Task input parameter
-      1,  // Priority of the task, 0 is lowest
-      &send_task,  // Task handle
-      0); // Core where the task should run, code runs on core 1 by default
-
-  
+//  xTaskCreatePinnedToCore(
+//      sendTask, // Function to implement the task
+//      "LoRa send", // Name of the task
+//      8192,  // Stack size in words, causes stack overflow if too low
+//      output,  // Task input parameter
+//      1,  // Priority of the task, 0 is lowest
+//      &send_task,  // Task handle
+//      0); // Core where the task should run, code runs on core 1 by default
 }
 
+// deprecated
 void sendTask (void* parameter) {
   const char *output = (const char*) parameter;
   vTaskDelete(NULL);
 }
 
+// deprecated
 void testSendLoRa (void* context) {
   const char *text = (const char*) context;
   sendJSON(createJSON(text));
+}
+
+StaticJsonDocument<256> getDoc (String text);
+void testQueuePacket (void* context) {
+  const char *text = (const char*) context;
+  send_queue.push(getDoc(text));
 }
