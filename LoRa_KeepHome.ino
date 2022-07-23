@@ -6,6 +6,8 @@
 #include <Event.h>
 #include <Timer.h>
 
+#include <UPnP_Generic.h>
+
 // Global constants / variables
 TaskHandle_t background_loop;
 
@@ -60,6 +62,9 @@ void setup () {
 void loop () {
   handleButton();
   t.update();
+  if (getWiFiMode() == 0) {
+    getUPnP() -> updatePortMappings(600000);  // 10 minutes
+  }
   state();
 }
 

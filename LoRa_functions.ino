@@ -30,7 +30,7 @@ void initLoRa () {
   LoRa.sleep();
   LoRa.setSyncWord(LORA_SYNCWORD);
   LoRa.setTxPower(20); // (dB) max legally allowed and using PA_BOOST pin
-  LoRa.setSpreadingFactor(8);
+  LoRa.setSpreadingFactor(10);
   LoRa.setCodingRate4(6);
   LoRa.setFrequency(LORA_FREQ);
   LoRa.setSignalBandwidth(125E3); // this SF, CR, and BW make for 433 bps (no, not even Kbps)

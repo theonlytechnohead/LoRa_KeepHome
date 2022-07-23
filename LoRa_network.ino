@@ -4,11 +4,12 @@
 #include <DNSServer.h>
 #include <TimeLib.h>
 
-WebServer server(80);
+WebServer server(7000);
 DNSServer dnsServer;
 WiFiUDP broadcast_udp;
 char udpBuffer[255]; // buffer to hold incoming UDP packet
 IPAddress ip;
+UPnP* upnp;
 
 enum WiFiMode {
   Client,
@@ -71,15 +72,36 @@ void initMDNS () {
   if (MDNS.begin("KeepHome")) {
     printMessage("wifi", "mDNS responder started: KeepHome.local/");
   }
-  MDNS.addService("_http", "_tcp", 80);
+  MDNS.addService("_http", "_tcp", 7000);
   broadcast_udp.begin(8874);
   printMessage("wifi", "UDP responder started");
   initModule(initNTP, "NTP");
   
-  //drawUI();
-  //getDisplay() -> display();
+  registerUPNP();
   
   initWebserver();
+}
+
+void registerUPNP () {
+  upnp = new UPnP(1000); // timeout, ms
+  if (upnp) {
+    upnp -> addPortMappingConfig(ip, 7000, RULE_PROTOCOL_TCP, 10 * 60 * 60, "KeepHome");
+    int result = upnp -> commitPortMappings();
+    String resultMessage = "";
+    if (result == PORT_MAP_SUCCESS) {
+      resultMessage = "success";
+    } else if (result == ALREADY_MAPPED) {
+      resultMessage = "already mapped";
+    } else if (result == EMPTY_PORT_MAPPING_CONFIG) {
+      resultMessage = "empty mapping config";
+    } else if (result == NETWORK_ERROR) {
+      resultMessage = "network error";
+    } else if (result == TIMEOUT) {
+      resultMessage = "timeout";
+    }
+    printMessage("upnp", resultMessage);
+//    upnp -> printAllPortMappings();
+  }
 }
 
 // Do Webserver
@@ -228,6 +250,10 @@ void handleWebClient () {
     }
     broadcast_udp.endPacket();
   }
+}
+
+UPnP* getUPnP () {
+  return upnp;
 }
 
 void disconnectWiFi () {
