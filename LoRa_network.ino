@@ -83,24 +83,33 @@ void initMDNS () {
 }
 
 void registerUPNP () {
-  upnp = new UPnP(1000); // timeout, ms
+  int retries = 3;
+  upnp = new UPnP(3000); // timeout, ms
   if (upnp) {
-    upnp -> addPortMappingConfig(ip, 7000, RULE_PROTOCOL_TCP, 10 * 60 * 60, "KeepHome");
-    int result = upnp -> commitPortMappings();
-    String resultMessage = "";
-    if (result == PORT_MAP_SUCCESS) {
-      resultMessage = "success";
-    } else if (result == ALREADY_MAPPED) {
-      resultMessage = "already mapped";
-    } else if (result == EMPTY_PORT_MAPPING_CONFIG) {
-      resultMessage = "empty mapping config";
-    } else if (result == NETWORK_ERROR) {
-      resultMessage = "network error";
-    } else if (result == TIMEOUT) {
-      resultMessage = "timeout";
+    upnp -> addPortMappingConfig(ip, 7000, RULE_PROTOCOL_TCP, 15 * 60, "KeepHome");
+    while (retries) {
+      int result = upnp -> commitPortMappings();
+      retries--;
+      String resultMessage = "";
+      if (result == PORT_MAP_SUCCESS) {
+        resultMessage = "success";
+      } else if (result == ALREADY_MAPPED) {
+        resultMessage = "already mapped";
+      } else if (result == EMPTY_PORT_MAPPING_CONFIG) {
+        resultMessage = "empty mapping config";
+      } else if (result == NETWORK_ERROR) {
+        resultMessage = "network error";
+      } else if (result == TIMEOUT) {
+        resultMessage = "timeout";
+      }
+      printMessage("upnp", resultMessage);
+      if ((result == PORT_MAP_SUCCESS) || (result == ALREADY_MAPPED)) {
+        retries = 0;
+        break;
+      } else {
+        vTaskDelay(500);
+      }
     }
-    printMessage("upnp", resultMessage);
-//    upnp -> printAllPortMappings();
   }
 }
 
