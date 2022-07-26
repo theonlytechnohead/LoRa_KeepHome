@@ -77,6 +77,7 @@ void drawUI () {
       display.drawString(0, 0, "KeepHome.local/");
       display.drawString(0, 10, getLocalIP());
       display.drawString(0, 20, "Wi-Fi: " + getNetworkName());
+      display.drawString(0, 30, "P/W: " + getPassword());
       break;
     case UI_NOTHING:
       ui_height = 1;
