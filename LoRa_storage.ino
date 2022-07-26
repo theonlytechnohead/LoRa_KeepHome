@@ -55,7 +55,7 @@ String readFile (const char* filename) {
 
 void writeFile (const char* filename, const char* contents) {
   File file = SPIFFS.open(filename, FILE_WRITE);
-  file.println(contents);
+  file.print(contents);
   file.close();
 }
 
