@@ -67,7 +67,11 @@ void initAP () {
 
 // WiFi done, do MDNS, update UI, etc...
 void initMDNS () {
-  printMessage("wifi", "Connected to " + WiFi.SSID());
+  if (currentMode == AP) {
+    printMessage("wifi", "Broadcasting as " + getSSID());
+  } else if (currentMode == Client) {
+    printMessage("wifi", "Connected to " + WiFi.SSID());
+  }
   printMessage("wifi", "IP address: " + ip.toString());
   if (MDNS.begin("KeepHome")) {
     printMessage("wifi", "mDNS responder started: KeepHome.local/");
@@ -75,16 +79,18 @@ void initMDNS () {
   MDNS.addService("_http", "_tcp", 7000);
   broadcast_udp.begin(8874);
   printMessage("wifi", "UDP responder started");
-  initModule(initNTP, "NTP");
   
-  registerUPNP();
+  if (currentMode == Client) {
+    initModule(initNTP, "NTP");
+    // registerUPNP();
+  }
   
   initWebserver();
 }
 
 void registerUPNP () {
   int retries = 3;
-  upnp = new UPnP(3000); // timeout, ms
+  upnp = new UPnP(2000); // timeout, ms
   if (upnp) {
     upnp -> addPortMappingConfig(ip, 7000, RULE_PROTOCOL_TCP, 15 * 60, "KeepHome");
     while (retries) {
@@ -279,5 +285,9 @@ int getWiFiMode() {
 }
 
 String getNetworkName() {
-  return WiFi.SSID();
+  if (currentMode == Client) {
+    return WiFi.SSID();
+  } else if (currentMode == AP) {
+    return "KeepHome";
+  }
 }
