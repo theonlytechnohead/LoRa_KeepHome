@@ -65,7 +65,9 @@ void loop () {
   if (getWiFiMode() == 0) {
     // getUPnP() -> updatePortMappings(600000);  // 10 minutes
   }
-  state();
+  if (digitalRead(0)) {
+    state();
+  }
 }
 
 void backgroundLoop (void* parameter) {
