@@ -63,7 +63,7 @@ void loop () {
   handleButton();
   t.update();
   if (getWiFiMode() == 0) {
-    getUPnP() -> updatePortMappings(600000);  // 10 minutes
+    // getUPnP() -> updatePortMappings(600000);  // 10 minutes
   }
   state();
 }
