@@ -216,9 +216,9 @@ String getPassword () {
   } else {
     String password;
     for (int i = 0; i < 8; i++) {
-      password += '0' + random(10);
+      password += String(random(10));
     }
-    writeFile("/password.txt", password);
+    setPassword(password);
     return password;
   }
 }
@@ -226,6 +226,7 @@ String getPassword () {
 void setPassword (String newPassword) {
   if (newPassword.length() >= 8) {
     newPassword.trim();
+    printMessage("wifi", "Set password to: " + newPassword);
     writeFile("/password.txt", newPassword);
   }
 }
