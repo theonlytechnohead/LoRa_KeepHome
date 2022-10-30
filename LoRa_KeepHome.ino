@@ -72,7 +72,8 @@ void loop () {
 
 void backgroundLoop (void* parameter) {
   for (;;) { // Infinite loop
-    vTaskDelay(10); // ESP32 defaults to 100Hz tick rate, so 10ms delay allows for 1 tick in order to run background tasks
     handleWebClient();
+    // do delay immediately after handleWebClient because power saving
+    vTaskDelay(10); // ESP32 defaults to 100Hz tick rate, so 10ms delay allows for 1 tick in order to run background tasks
   }
 }
