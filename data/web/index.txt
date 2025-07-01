@@ -1,6 +1,22 @@
 Hello world!
 <br>
 <br>
-<form action='/log'><input type='submit' value='View log'></form>
-<form action='/clear'><input type='submit' value='Clear log'></form>
-<form action='/restart'><input type='submit' value='Restart KeepHome'>
+<form action="/post" method="post">
+	<input type="radio" id="getSSID" name="SSID" value="get">
+	<label for="getSSID">Get SSID</label>
+	<input type="radio" id="setSSID" name="SSID" value="set">
+	<label for="setSSID">Set SSID</label>
+	<input type="text" id="newWiFiSSID" name="newWiFiSSID"><br>
+	<input type="radio" id="getWiFiMode" name="WiFiMode" value="get">
+	<label for="getWiFiMode">Get Wi-Fi mode</label>
+	<input type="radio" id="setWiFiMode" name="WiFiMode" value="set">
+	<label for="setWiFiMode">Set Wi-Fi mode</label>
+	<input type="text" id="newWiFimode" name="newWiFimode"><br>
+	<input type="radio" id="getPassword" name="password" value="get">
+	<label for="getPassword">Get password</label>
+	<input type="radio" id="setPassword" name="password" value="set">
+	<label for="setPassword">Set password</label>
+	<input type="text" id="newPassword" name="newPassword"><br>
+	<input type="submit" value="Submit">
+</form>
+<form action="/restart"><input type='submit' value='Restart KeepHome'>
