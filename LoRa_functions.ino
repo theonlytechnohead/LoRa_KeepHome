@@ -21,7 +21,6 @@ void initLoRa () {
     getDisplay() -> drawString(64, 22, "LoRa borked");
     getDisplay() -> display();
     while (1) {
-      rtc_wdt_feed(); // satiate the WDT
       vTaskDelay(pdMS_TO_TICKS(100));
     }
   }

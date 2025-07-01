@@ -1,12 +1,11 @@
 #include <LoRa.h>
 #include <SSD1306.h>
 #include <OLEDDisplayUi.h>
-#include "soc/rtc_wdt.h" // FreeRTOS WDT control for ESP32
 #include <ArduinoJson.h>
 #include <Event.h>
 #include <Timer.h>
 
-#include <UPnP_Generic.h>
+#include "TinyUPnP.h"
 
 // Global constants / variables
 TaskHandle_t background_loop;
@@ -19,6 +18,9 @@ bool button_pressed = false;
 bool booted = false;
 unsigned long start_millis = 0;
 
+// ESP32 Arduino Core 3+ is incompatible with any serial baud rate when using TTGO LoRa OLED V1 boards:
+// https://forum.arduino.cc/t/baudrate-changes-after-boot/1337352/18
+// not tried: setting serial baud to 115200 in code and setting IDE to 74880
 void setup () {
   Serial.begin(115200);
   pinMode(0, INPUT); // PRG button
@@ -28,7 +30,7 @@ void setup () {
 
   initModule(initOLED, "Display");
   initModule(initLoRa, "LoRa");
-  initModule(initSPIFFS, "SPIFFS");
+  initModule(initLittleFS, "LittleFS");
   initModule(initNetwork, "Network");
   
   xTaskCreatePinnedToCore(
@@ -63,7 +65,7 @@ void loop () {
   handleButton();
   t.update();
   if (getWiFiMode() == 0) {
-    // getUPnP() -> updatePortMappings(600000);  // 10 minutes
+    getUPnP() -> updatePortMappings(600000);  // 10 minutes
   }
   if (digitalRead(0)) {
     state();

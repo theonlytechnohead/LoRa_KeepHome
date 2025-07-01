@@ -1,45 +1,45 @@
-#include <SPIFFS.h>
+#include <LittleFS.h>
 
-void initSPIFFS () {
-  if (!SPIFFS.begin()) {
+void initLittleFS () {
+  if (!LittleFS.begin()) {
     getDisplay() -> clear();
     getDisplay() -> setTextAlignment(TEXT_ALIGN_CENTER);
-    getDisplay() -> drawString(64, 22, "SPIFFS borked");
+    getDisplay() -> drawString(64, 22, "LittleFS borked!");
     getDisplay() -> display();
   }
   listFiles();
 }
 
-void formatSPIFFS () {
-  SPIFFS.format();
+void formatLittleFS () {
+  LittleFS.format();
   restart();
 }
 
 void listFiles () {
-  File root = SPIFFS.open("/");
+  File root = LittleFS.open("/");
   File file = root.openNextFile();
-  while(file){
-    if (String(file.name()) == "/log.txt") { file = root.openNextFile(); continue; }
-    if (String(file.name()).startsWith("/web")) { file = root.openNextFile(); continue; }
-    if (String(file.name()) == "/password.txt") {
+  while (file) {
+    if (String(file.name()) == "log.txt") { file = root.openNextFile(); continue; }
+    if (String(file.name()) == "web") { file = root.openNextFile(); continue; }
+    if (String(file.name()) == "password.txt") {
       printMessage("file", String(file.name()) + ": <REDACTED>");
       file = root.openNextFile();
       continue;
     }
-    printMessage("file", String(file.name()) + ": '" + readFile(file.name()) + "'");
+    printMessage("file", String(file.path()) + ": '" + readFile(file.path()) + "'");
     file = root.openNextFile();
   }
 }
 
 // File operations
 bool checkFile (const char* filename) {
-  return SPIFFS.exists(filename);
+  return LittleFS.exists(filename);
 }
 
 
 String readFile (const char* filename) {
   if (checkFile(filename)) {
-    File file = SPIFFS.open(filename, FILE_READ);
+    File file = LittleFS.open(filename, FILE_READ);
     String contents;
     while (file.available()) {
       contents += char(file.read());
@@ -54,7 +54,7 @@ String readFile (const char* filename) {
 
 
 void writeFile (const char* filename, const char* contents) {
-  File file = SPIFFS.open(filename, FILE_WRITE);
+  File file = LittleFS.open(filename, FILE_WRITE);
   file.print(contents);
   file.close();
 }
@@ -65,7 +65,7 @@ void writeFile (const char* filename, String contents) {
 
 
 void appendFile (const char* filename, const char* contents) {
-  File file = SPIFFS.open(filename, FILE_APPEND);
+  File file = LittleFS.open(filename, FILE_APPEND);
   file.println(contents);
   file.close();
 }
@@ -75,7 +75,7 @@ void appendFile (const char* filename, String contents) {
 }
 
 void removeFile (const char* filename) {
-  SPIFFS.remove(filename);
+  LittleFS.remove(filename);
 }
 
 

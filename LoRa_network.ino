@@ -9,7 +9,7 @@ DNSServer dnsServer;
 WiFiUDP broadcast_udp;
 char udpBuffer[255]; // buffer to hold incoming UDP packet
 IPAddress ip;
-UPnP* upnp;
+TinyUPnP* upnp;
 
 enum WiFiMode {
   Client,
@@ -43,7 +43,9 @@ void onWiFiIP (WiFiEvent_t event, WiFiEventInfo_t info);
 
 // Connect to WiFi part 1
 void initWiFi () {
-  WiFi.onEvent(onWiFiIP, WiFiEvent_t::SYSTEM_EVENT_STA_GOT_IP);
+  WiFi.onEvent(onWiFiIP, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
+  WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
+  WiFi.setHostname("KeepHome");
   String ssid = getSSID();
   String password = getPassword();
   printMessage("wifi", "Connecting to " + ssid + "...");
@@ -82,7 +84,7 @@ void initMDNS () {
   
   if (currentMode == Client) {
     initModule(initNTP, "NTP");
-    // registerUPNP();
+    registerUPNP();
   }
   
   initWebserver();
@@ -90,14 +92,14 @@ void initMDNS () {
 
 void registerUPNP () {
   int retries = 3;
-  upnp = new UPnP(2000); // timeout, ms
+  upnp = new TinyUPnP(2000); // timeout, ms
   if (upnp) {
     upnp -> addPortMappingConfig(ip, 7000, RULE_PROTOCOL_TCP, 15 * 60, "KeepHome");
     while (retries) {
       int result = upnp -> commitPortMappings();
       retries--;
       String resultMessage = "";
-      if (result == PORT_MAP_SUCCESS) {
+      if (result == SUCCESS) {
         resultMessage = "success";
       } else if (result == ALREADY_MAPPED) {
         resultMessage = "already mapped";
@@ -109,7 +111,7 @@ void registerUPNP () {
         resultMessage = "timeout";
       }
       printMessage("upnp", resultMessage);
-      if ((result == PORT_MAP_SUCCESS) || (result == ALREADY_MAPPED)) {
+      if ((result == SUCCESS) || (result == ALREADY_MAPPED)) {
         retries = 0;
         break;
       } else {
@@ -268,7 +270,7 @@ void handleWebClient () {
   }
 }
 
-UPnP* getUPnP () {
+TinyUPnP* getUPnP () {
   return upnp;
 }
 
@@ -291,4 +293,5 @@ String getNetworkName() {
   } else if (currentMode == AP) {
     return "KeepHome";
   }
+  return "";
 }

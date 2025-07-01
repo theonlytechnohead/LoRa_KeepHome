@@ -18,7 +18,7 @@ void handleButton () {
   if (!digitalRead(0) && button_pressed && start_millis != 0) {
     if (millis() - 2500 >= start_millis) {
       Serial.println("Long press!");
-      formatSPIFFS();
+      formatLittleFS();
       start_millis = 0;
     } else {
       int width = (millis() - start_millis) / 2500.0 * OLED_WIDTH;

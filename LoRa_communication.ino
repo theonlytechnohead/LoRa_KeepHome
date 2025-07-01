@@ -3,9 +3,12 @@
 
 //#include "mbedtls/md.h"
 
-#include <CircularBuffer.h>
+#include <CircularBuffer.hpp>
+
 CircularBuffer<StaticJsonDocument<256>,4> send_queue;
+
 void (*prev)(); // stores the previous state, to aid in state transitions
+
 int count = 0;
 int packetSize = 0;
 
